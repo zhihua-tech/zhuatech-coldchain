@@ -1,0 +1,13 @@
+-- 上海如静知华信息科技有限公司 https://www.zhuatech.cn/
+-- 商业授权或定制开发请微信添加微信号zhuatech或zhuatech2进行咨询。
+CREATE DATABASE IF NOT EXISTS zhuatech_coldchain DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE zhuatech_coldchain;
+
+CREATE TABLE cold_asset (id VARCHAR(32) PRIMARY KEY, code VARCHAR(64) NOT NULL UNIQUE, name VARCHAR(128) NOT NULL, asset_type VARCHAR(24) NOT NULL, organization VARCHAR(128) NOT NULL, status VARCHAR(24) NOT NULL, created_at DATETIME(3) NOT NULL);
+CREATE TABLE sensor (id VARCHAR(32) PRIMARY KEY, code VARCHAR(64) NOT NULL UNIQUE, asset_id VARCHAR(32), sensor_type VARCHAR(32) NOT NULL, calibration_due_at DATETIME(3), battery_percent DECIMAL(5,2), status VARCHAR(24) NOT NULL, last_seen_at DATETIME(3));
+CREATE TABLE shipment (id VARCHAR(32) PRIMARY KEY, batch_no VARCHAR(64) NOT NULL UNIQUE, goods_name VARCHAR(128) NOT NULL, asset_id VARCHAR(32) NOT NULL, origin VARCHAR(255) NOT NULL, destination VARCHAR(255) NOT NULL, carrier VARCHAR(128) NOT NULL, thresholds JSON NOT NULL, status VARCHAR(24) NOT NULL, planned_departure_at DATETIME(3), started_at DATETIME(3), delivered_at DATETIME(3), receiver VARCHAR(64), signature VARCHAR(255), created_at DATETIME(3) NOT NULL);
+CREATE TABLE shipment_sensor (shipment_id VARCHAR(32) NOT NULL, sensor_id VARCHAR(32) NOT NULL, PRIMARY KEY(shipment_id,sensor_id));
+CREATE TABLE telemetry (event_id VARCHAR(64) PRIMARY KEY, sensor_id VARCHAR(32) NOT NULL, shipment_id VARCHAR(32) NOT NULL, temperature DECIMAL(8,3) NOT NULL, humidity DECIMAL(8,3) NOT NULL, door_open BOOLEAN NOT NULL, latitude DECIMAL(10,7), longitude DECIMAL(10,7), reported_at DATETIME(3) NOT NULL, INDEX idx_telemetry_shipment_time(shipment_id,reported_at));
+CREATE TABLE cold_alarm (id VARCHAR(32) PRIMARY KEY, shipment_id VARCHAR(32) NOT NULL, sensor_id VARCHAR(32) NOT NULL, alarm_type VARCHAR(32) NOT NULL, message VARCHAR(512) NOT NULL, severity VARCHAR(16) NOT NULL, status VARCHAR(24) NOT NULL, occurrences INT NOT NULL, assignee VARCHAR(64), cause VARCHAR(512), corrective_action VARCHAR(512), evidence VARCHAR(512), first_seen_at DATETIME(3) NOT NULL, last_seen_at DATETIME(3) NOT NULL, resolved_at DATETIME(3), INDEX idx_alarm_shipment_status(shipment_id,status));
+CREATE TABLE route_event (id VARCHAR(32) PRIMARY KEY, shipment_id VARCHAR(32) NOT NULL, event_type VARCHAR(32) NOT NULL, location VARCHAR(255) NOT NULL, note VARCHAR(512), actor VARCHAR(64), occurred_at DATETIME(3) NOT NULL);
+CREATE TABLE audit_event (id VARCHAR(32) PRIMARY KEY, actor VARCHAR(64) NOT NULL, action VARCHAR(64) NOT NULL, resource_id VARCHAR(64) NOT NULL, detail JSON, occurred_at DATETIME(3) NOT NULL);

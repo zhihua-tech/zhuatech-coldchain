@@ -1,0 +1,16 @@
+services:
+  coldchain:
+    build: .
+    ports: ["18103:18103"]
+    environment:
+      PORT: 18103
+      COLDCHAIN_API_KEY: ${COLDCHAIN_API_KEY:-zhuatech-demo-key}
+      COLDCHAIN_DATA_FILE: /app/data/coldchain.json
+    volumes: ["coldchain-data:/app/data"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:18103/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+volumes:
+  coldchain-data:

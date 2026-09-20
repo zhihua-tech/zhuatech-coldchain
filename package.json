@@ -1,0 +1,14 @@
+{
+  "name": "@zhuatech/coldchain",
+  "version": "1.0.0",
+  "private": true,
+  "description": "知华冷链物联网监控平台社区版",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test",
+    "check": "node --check src/domain.js && node --check src/server.js"
+  },
+  "engines": { "node": ">=20" },
+  "license": "LicenseRef-ZhuaTech-NonCommercial-1.0"
+}
